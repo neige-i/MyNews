@@ -5,7 +5,7 @@ import java.util.concurrent.TimeUnit;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.ResponseBody;
+import neige_i.mynews.model.Topic;
 import retrofit2.Response;
 
 /**
@@ -40,7 +40,7 @@ public class NYTStream {
      * @param section The section of the articles to get.
      * @return The Observable of the request stream.
      */
-    public static Observable<Response<ResponseBody>> streamTopStories(String section) {
+    public static Observable<? extends Response<? extends Topic>> streamTopStories(String section) {
         return streamRequest(API_TOP_STORIES, section, null, null, null, null);
     }
 
@@ -49,7 +49,7 @@ public class NYTStream {
      * to the Most Popular API.
      * @return The Observable of the request stream.
      */
-    public static Observable<Response<ResponseBody>> streamMostPopular() {
+    public static Observable<? extends Response<? extends Topic>> streamMostPopular() {
         return streamRequest(API_MOST_POPULAR, null, null, null, null, null);
     }
 
@@ -62,8 +62,7 @@ public class NYTStream {
      * @param filterQuery Filtered search to indicate the categories of the articles to search.
      * @return The Observable of the request stream.
      */
-    public static Observable<Response<ResponseBody>> streamArticleSearch(String query, String beginDate,
-                                                                         String endDate, String filterQuery) {
+    public static Observable<? extends Response<? extends Topic>> streamArticleSearch(String query, String beginDate, String endDate, String filterQuery) {
         return streamRequest(API_ARTICLE_SEARCH, null, query, beginDate, endDate, filterQuery);
     }
 
@@ -80,13 +79,12 @@ public class NYTStream {
      * @param filterQuery   Filtered search to indicate the categories of the articles to search, for Article Search API.
      * @return              The Observable of the request stream.
      */
-    private static Observable<Response<ResponseBody>> streamRequest(int apiId, String section, String query,
-                                                                    String beginDate, String endDate, String filterQuery) {
+    private static Observable<? extends Response<? extends Topic>> streamRequest(int apiId, String section, String query, String beginDate, String endDate, String filterQuery) {
         // Create the Endpoint
         NYTEndpoint nytEndpoint = NYTEndpoint.retrofit.create(NYTEndpoint.class);
 
         // Get the Observable
-        Observable<Response<ResponseBody>> topicObservable = null;
+        Observable<? extends Response<? extends Topic>> topicObservable = null;
         switch (apiId) {
             case API_TOP_STORIES:       topicObservable = nytEndpoint.getTopStories(section);   break;
             case API_MOST_POPULAR:      topicObservable = nytEndpoint.getMostPopularArticles(); break;

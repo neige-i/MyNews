@@ -1,10 +1,13 @@
 package neige_i.mynews.util;
 
 import io.reactivex.Observable;
-import okhttp3.ResponseBody;
+import neige_i.mynews.model.ArticleSearch;
+import neige_i.mynews.model.MostPopular;
+import neige_i.mynews.model.TopStories;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import retrofit2.http.Query;
@@ -45,6 +48,7 @@ public interface NYTEndpoint {
     Retrofit retrofit = new Retrofit.Builder()
             .baseUrl("http://api.nytimes.com/svc/")
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+            .addConverterFactory(GsonConverterFactory.create())
             .build();
 
     // --------------------------------     HTTP REQUEST METHODS     -------------------------------
@@ -57,7 +61,7 @@ public interface NYTEndpoint {
      * @return The response to the API request, inside an Observable collection to use reactive programming.
      */
     @GET("topstories/v2/{section}.json?api-key=" + API_KEY)
-    Observable<Response<ResponseBody>> getTopStories(@Path("section") String section);
+    Observable<Response<TopStories>> getTopStories(@Path("section") String section);
 
     /**
      * Executes a request to the Most Popular API.
@@ -65,7 +69,7 @@ public interface NYTEndpoint {
      * @return The response to the API request, inside an Observable collection to use reactive programming.
      */
     @GET("mostpopular/v2/mostviewed/all-sections/7.json?api-key=" + API_KEY)
-    Observable<Response<ResponseBody>> getMostPopularArticles();
+    Observable<Response<MostPopular>> getMostPopularArticles();
 
     /**
      * Executes a request to the Article Search API.
@@ -77,8 +81,8 @@ public interface NYTEndpoint {
      * @return The response to the API request, inside an Observable collection to use reactive programming.
      */
     @GET("search/v2/articlesearch.json?sort=newest&api-key=" + API_KEY)
-    Observable<Response<ResponseBody>> getSearchedArticles(@Query("q") String query,
-                                             @Query("begin_date") String beginDate,
-                                             @Query("end_date") String endDate,
-                                             @Query("fq") String filterQuery);
+    Observable<Response<ArticleSearch>> getSearchedArticles(@Query("q") String query,
+                                                            @Query("begin_date") String beginDate,
+                                                            @Query("end_date") String endDate,
+                                                            @Query("fq") String filterQuery);
 }

@@ -4,13 +4,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import io.reactivex.Observable;
-import io.reactivex.observers.DisposableObserver;
-import okhttp3.ResponseBody;
+import io.reactivex.observers.TestObserver;
+import neige_i.mynews.model.Topic;
 import retrofit2.Response;
 
 import static neige_i.mynews.util.NYTEndpoint.SECTION_BUSINESS;
 import static neige_i.mynews.util.NYTEndpoint.SECTION_HOME;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class NYTEndpointTest {
@@ -70,26 +69,14 @@ public class NYTEndpointTest {
      * It ensures that the HTTP request response is successful.
      * @param observable Launches the stream's subscription.
      */
-    private void testRequest(Observable<Response<ResponseBody>> observable) {
-        // Control variable
-        final boolean[] isResponseValid = new boolean[]{false};
+    private void testRequest(Observable<? extends Response<? extends Topic>> observable) {
+        // Create the Observer
+        TestObserver<Response> testObserver = new TestObserver<>();
 
-        // Execute the HTTP request
-        observable.subscribeWith(new DisposableObserver<Response>() {
-            @Override
-            public void onNext(Response response) {
-                isResponseValid[0] = response.isSuccessful();
-            }
+        // Launch the subscription
+        observable.subscribeWith(testObserver).assertNoErrors().assertNoTimeout().awaitTerminalEvent();
 
-            @Override
-            public void onError(Throwable e) {
-                assertTrue(false);
-            }
-
-            @Override
-            public void onComplete() {
-                assertEquals(true, isResponseValid[0]);
-            }
-        });
+        // Check if the request response is successful
+        assertTrue(testObserver.values().get(0).isSuccessful());
     }
 }

@@ -4,12 +4,12 @@ import org.junit.Test;
 
 import io.reactivex.Observable;
 import io.reactivex.observers.TestObserver;
-import okhttp3.ResponseBody;
+import neige_i.mynews.model.Topic;
 import retrofit2.Response;
 
 import static neige_i.mynews.util.NYTEndpoint.SECTION_BUSINESS;
 import static neige_i.mynews.util.NYTEndpoint.SECTION_HOME;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class NYTStreamTest {
     // ------------------------------------     TEST METHODS     -----------------------------------
@@ -51,17 +51,24 @@ public class NYTStreamTest {
 
     /**
      * Launches a stream with the specified observable to execute the HTTP request.
-     * It ensures that the HTTP request response is successful.
+     * It ensures that the HTTP request response gives a correct article list.
      * @param observable Launches the stream's subscription.
      */
-    private void streamTest(Observable<Response<ResponseBody>> observable) {
+    private void streamTest(Observable<? extends Response<? extends Topic>> observable) {
         // Create the Observer
-        TestObserver<Response<ResponseBody>> testObserver = new TestObserver<>();
+        TestObserver<Response<? extends Topic>> testObserver = new TestObserver<>();
 
         // Launch the subscription
         observable.subscribeWith(testObserver).assertNoErrors().assertNoTimeout().awaitTerminalEvent();
 
-       // Check if the request response is successful
-       assertTrue(testObserver.values().get(0).isSuccessful());
+        // Get the required topic from the Observer
+        Topic topic = testObserver.values().get(0).body();
+
+        // Get the beginning of the URL address of the first article of the list
+        assert topic != null;
+        String beginningUrl = topic.getArticleList().get(0).getUrl().substring(0, 24);
+
+        // Check the validity of the URL
+        assertEquals("https://www.nytimes.com/", beginningUrl);
     }
 }
