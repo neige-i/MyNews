@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">MyNews</string>
+
+    <!-- Toolbar's item title -->
+    <string name="search">Search</string>
+    <string name="notifications">Notifications</string>
+    <string name="about">About</string>
+
+    <!-- Tab title -->
+    <array name="tab_title">
+        <item>Top stories</item>
+        <item>Most popular</item>
+        <item>Business</item>
+    </array>
 </resources>
