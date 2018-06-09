@@ -12,4 +12,7 @@
         <item>Most popular</item>
         <item>Business</item>
     </array>
+
+    <!-- RecyclerView item -->
+    <string name="article_thumbnail_description">Article thumbnail</string>
 </resources>
