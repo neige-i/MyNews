@@ -15,4 +15,9 @@
 
     <!-- RecyclerView item -->
     <string name="article_thumbnail_description">Article thumbnail</string>
+
+    <!-- Snackbar message -->
+    <string name="connection_timed_out">Timed out! Please check your internet connection.</string>
+    <string name="no_internet">No internet connection</string>
+    <string name="unknown_error">Connection failed! An error has occurred.</string>
 </resources>

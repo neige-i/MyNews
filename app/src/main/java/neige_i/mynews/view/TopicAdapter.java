@@ -23,6 +23,23 @@ public class TopicAdapter extends FragmentPagerAdapter {
      */
     private final Context mContext;
 
+    // ---------------------------------     STATIC VARIABLES     ----------------------------------
+
+    /**
+     * Index of the page displaying the top stories.
+     */
+    public static final int TOP_STORIES = 0;
+
+    /**
+     * Index of the page displaying the most popular articles.
+     */
+    public static final int MOST_POPULAR = 1;
+
+    /**
+     * Index of the page displaying the business articles.
+     */
+    public static final int BUSINESS = 2;
+
     // -----------------------------------     CONSTRUCTORS     ------------------------------------
 
     public TopicAdapter(FragmentManager fm, Context context) {

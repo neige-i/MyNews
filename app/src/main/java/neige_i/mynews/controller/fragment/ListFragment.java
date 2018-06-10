@@ -1,6 +1,8 @@
 package neige_i.mynews.controller.fragment;
 
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -8,23 +10,36 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.reactivex.Observable;
+import io.reactivex.observers.DisposableObserver;
 import neige_i.mynews.R;
 import neige_i.mynews.model.Article;
+import neige_i.mynews.model.Topic;
+import neige_i.mynews.util.NYTStream;
 import neige_i.mynews.view.DividerDecoration;
 import neige_i.mynews.view.NewsAdapter;
 import neige_i.mynews.view.TopicAdapter;
+import retrofit2.Response;
+
+import static neige_i.mynews.util.NYTEndpoint.SECTION_BUSINESS;
+import static neige_i.mynews.util.NYTEndpoint.SECTION_HOME;
+import static neige_i.mynews.view.TopicAdapter.BUSINESS;
+import static neige_i.mynews.view.TopicAdapter.MOST_POPULAR;
+import static neige_i.mynews.view.TopicAdapter.TOP_STORIES;
 
 /**
  * This fragment displays the RecyclerView containing the article list.<br />
  * It is used in a ViewPager adapter.
  * @see TopicAdapter TopicAdapter
  */
-@SuppressWarnings("WeakerAccess")
+@SuppressWarnings({"WeakerAccess", "ConstantConditions"})
 public class ListFragment extends Fragment {
     // -----------------------------------     UI VARIABLES     ------------------------------------
 
@@ -33,12 +48,24 @@ public class ListFragment extends Fragment {
      */
     @BindView(R.id.recyclerView) RecyclerView mRecyclerView;
 
+    /**
+     * Parent layout of this fragment. It is used to correctly implement the Snackbar.
+     */
+    @BindView(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
+
     // ----------------------------------     DATA VARIABLES     -----------------------------------
 
     /**
      * List of the articles to show, retrieved from the HTTP request response.
      */
     private final List<Article> mArticleList = new ArrayList<>();
+
+    // ---------------------------------     NETWORK VARIABLES     ---------------------------------
+
+    /**
+     * Observer contained in a Disposable object to prevent memory leaks.
+     */
+    private DisposableObserver mDisposableObserver;
 
     // ---------------------------------     STATIC VARIABLES     ----------------------------------
 
@@ -72,27 +99,16 @@ public class ListFragment extends Fragment {
         View mainView = inflater.inflate(R.layout.fragment_list, container, false);
         ButterKnife.bind(this, mainView);
 
-        setFakeArticleList();
         configRecyclerView();
+        executeHttpRequest();
 
         return mainView;
     }
 
-    // -----------------------------------     DATA METHODS     ------------------------------------
-
-    /**
-     * Populates the article list with fake ones. This is a temporary method.
-     * Its purpose is only to have a list preview, before using HTTP request responses to update it.
-     */
-    private void setFakeArticleList() {
-        for (int i = 0; i < 10; i++) {
-            Article fakeArticle = new Article();
-            fakeArticle.setTitle("This is the article title of the #" + (i+1) + " news");
-            fakeArticle.setSection("Article's section");
-            fakeArticle.setPublishedDate("2018-06-09");
-            fakeArticle.setThumbnailUrl("https://pbs.twimg.com/profile_images/979726623657381889/ugnnQqXa_400x400.jpg");
-            mArticleList.add(fakeArticle);
-        }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        disposeWhenDestroy();
     }
 
     // ------------------------------------     UI METHODS     -------------------------------------
@@ -104,5 +120,62 @@ public class ListFragment extends Fragment {
         mRecyclerView.setAdapter(new NewsAdapter(mArticleList));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerDecoration(mRecyclerView.getContext()));
+    }
+
+    // ----------------------------------     NETWORK METHODS     ----------------------------------
+
+    /**
+     * Returns the appropriate Observable according to the specified fragment position.
+     * @param fragmentPosition The current position of the displayed fragment.
+     * @return The Observable in charge of launching the stream to execute the HTTP request.
+     */
+    private Observable<? extends Response<? extends Topic>> getObservable(int fragmentPosition) {
+        switch (fragmentPosition) {
+            case TOP_STORIES:   return NYTStream.streamTopStories(SECTION_HOME);
+            case MOST_POPULAR:  return NYTStream.streamMostPopular();
+            case BUSINESS:      return NYTStream.streamTopStories(SECTION_BUSINESS);
+            default:            throw new IllegalArgumentException("Cannot configure the Observable" +
+                    " in ListFragment. This fragment has been instantiated with a wrong 'FRAGMENT_INDEX' argument." +
+                    " The found argument is: " + fragmentPosition + '.');
+        }
+    }
+
+    /**
+     * Executes the appropriate request so as to retrieve the article list.
+     */
+    private void executeHttpRequest() {
+        mDisposableObserver = getObservable(getArguments().getInt(FRAGMENT_INDEX))
+                .subscribeWith(new DisposableObserver<Response<? extends Topic>>() {
+            @Override
+            public void onNext(Response<? extends Topic> topicResponse) {
+                mArticleList.clear();
+                mArticleList.addAll(topicResponse.body().getArticleList());
+                mRecyclerView.getAdapter().notifyDataSetChanged();
+            }
+
+            @Override
+            public void onError(Throwable e) {
+                // Display an error message in the Snackbar
+                String errorMessage;
+                if (e instanceof UnknownHostException)
+                    errorMessage = getString(R.string.no_internet);
+                else if (e instanceof TimeoutException)
+                    errorMessage = getString(R.string.connection_timed_out);
+                else
+                    errorMessage = getString(R.string.unknown_error);
+                Snackbar.make(mCoordinatorLayout, errorMessage, Snackbar.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onComplete() {}
+        });
+    }
+
+    /**
+     * Disposes the Observable when the activity is destroyed.
+     */
+    private void disposeWhenDestroy() {
+        if (mDisposableObserver != null && !mDisposableObserver.isDisposed())
+            mDisposableObserver.dispose();
     }
 }
