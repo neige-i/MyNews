@@ -3,6 +3,8 @@ package neige_i.mynews.controller.activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -39,7 +41,7 @@ public class SearchActivity extends AppCompatActivity {
         ButterKnife.bind(this);
 
         configToolbar();
-        configFragment();
+        addOrReplaceFragment(new SearchFragment(), true);
     }
 
     @Override
@@ -67,14 +69,27 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     /**
-     * Configures the fragment to add.
+     * Adds the specified fragment or makes it replace the old one.
+     * @param fragmentToDisplay The fragment to be displayed in the activity.
+     * @param addOrReplace      True to add the fragment, false to make it replace the old one.
      */
-    public void configFragment() {
-        // Set the activity title
-        setTitle(R.string.search_articles);
+    public void addOrReplaceFragment(Fragment fragmentToDisplay, boolean addOrReplace) {
+        // Initialize variables
+        int containerId = R.id.fragment_container;
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
-        // Add the fragment
-        getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, new SearchFragment()).commit();
+        // Add or replace fragment
+        if (addOrReplace)
+            // If the fragment is a new one, then it is SearchFragment
+            fragmentTransaction.add(containerId, fragmentToDisplay);
+        else {
+            // If the fragment replaces an old one, then it is ListFragment
+            fragmentTransaction.replace(containerId, fragmentToDisplay).addToBackStack(null);
+            setTitle(R.string.search_results);
+        }
+
+        // Commit the transaction
+        fragmentTransaction.commit();
     }
 
     /**

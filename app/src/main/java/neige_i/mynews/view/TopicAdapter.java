@@ -40,6 +40,11 @@ public class TopicAdapter extends FragmentPagerAdapter {
      */
     public static final int BUSINESS = 2;
 
+    /**
+     * Index of the page displaying the searched articles.
+     */
+    public static final int ARTICLE_SEARCH = -1;
+
     // -----------------------------------     CONSTRUCTORS     ------------------------------------
 
     public TopicAdapter(FragmentManager fm, Context context) {
