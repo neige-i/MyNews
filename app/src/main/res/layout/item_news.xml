@@ -2,9 +2,12 @@
 <!-- This layout displays an item of the RecyclerView, which represents an article. -->
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/item_padding">
+    android:padding="@dimen/item_padding"
+    android:background="?android:attr/selectableItemBackground"
+    tools:ignore="Overdraw">
 
     <ImageView
         android:id="@+id/thumbnail"

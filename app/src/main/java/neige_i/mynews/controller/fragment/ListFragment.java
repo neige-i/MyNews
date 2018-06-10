@@ -1,5 +1,6 @@
 package neige_i.mynews.controller.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -21,6 +22,7 @@ import butterknife.ButterKnife;
 import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import neige_i.mynews.R;
+import neige_i.mynews.controller.activity.ArticleActivity;
 import neige_i.mynews.model.Article;
 import neige_i.mynews.model.Topic;
 import neige_i.mynews.util.NYTStream;
@@ -29,6 +31,8 @@ import neige_i.mynews.view.NewsAdapter;
 import neige_i.mynews.view.TopicAdapter;
 import retrofit2.Response;
 
+import static neige_i.mynews.controller.activity.ArticleActivity.TITLE;
+import static neige_i.mynews.controller.activity.ArticleActivity.URL;
 import static neige_i.mynews.util.NYTEndpoint.SECTION_BUSINESS;
 import static neige_i.mynews.util.NYTEndpoint.SECTION_HOME;
 import static neige_i.mynews.view.TopicAdapter.BUSINESS;
@@ -41,7 +45,7 @@ import static neige_i.mynews.view.TopicAdapter.TOP_STORIES;
  * @see TopicAdapter TopicAdapter
  */
 @SuppressWarnings({"WeakerAccess", "ConstantConditions"})
-public class ListFragment extends Fragment {
+public class ListFragment extends Fragment implements NewsAdapter.OnArticleClickListener {
     // -----------------------------------     UI VARIABLES     ------------------------------------
 
     /**
@@ -113,6 +117,11 @@ public class ListFragment extends Fragment {
     }
 
     @Override
+    public void onArticleClick(Article clickedArticle) {
+        showArticleContent(clickedArticle.getTitle(), clickedArticle.getUrl());
+    }
+
+    @Override
     public void onDestroy() {
         super.onDestroy();
         disposeWhenDestroy();
@@ -124,7 +133,7 @@ public class ListFragment extends Fragment {
      * Configures the RecyclerView.
      */
     private void configRecyclerView() {
-        mRecyclerView.setAdapter(new NewsAdapter(mArticleList));
+        mRecyclerView.setAdapter(new NewsAdapter(mArticleList, this));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerDecoration(mRecyclerView.getContext()));
     }
@@ -140,6 +149,21 @@ public class ListFragment extends Fragment {
                 executeHttpRequest();
             }
         });
+    }
+
+    /**
+     * Starts an activity to display the clicked article.
+     * @param title The title of the article to display.
+     * @param url   The url address of the article to display.
+     */
+    private void showArticleContent(String title, String url) {
+        // Create an intent and put extras into it
+        Intent activityIntent = new Intent(getContext(), ArticleActivity.class);
+        activityIntent.putExtra(TITLE, title);
+        activityIntent.putExtra(URL, url);
+
+        // Start activity
+        startActivity(activityIntent);
     }
 
     // ----------------------------------     NETWORK METHODS     ----------------------------------
