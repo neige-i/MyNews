@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- RecyclerView's item -->
+    <dimen name="item_padding">6dp</dimen>
+
+    <!-- RecyclerView's ImageView -->
+    <dimen name="image_width">60dp</dimen>
+    <dimen name="image_height">@dimen/image_width</dimen>
+    <dimen name="image_margin_end">@dimen/item_padding</dimen>
+
+    <!-- RecyclerView's TextView -->
+    <dimen name="title_size">15sp</dimen>
+    <dimen name="section_date_size">12sp</dimen>
+    <dimen name="margin_top">3dp</dimen>
+
+</resources>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This layout is the MainActivity options menu. It contains 3 items. -->
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/search"
+        android:title="@string/search"
+        android:icon="@drawable/ic_search"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/notifications"
+        android:title="@string/notifications"
+        app:showAsAction="never" />
+
+    <item
+        android:id="@+id/about"
+        android:title="@string/about"
+        app:showAsAction="never" />
+
+</menu>

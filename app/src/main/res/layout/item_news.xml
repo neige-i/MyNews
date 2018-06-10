@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This layout displays an item of the RecyclerView, which represents an article. -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/item_padding">
+
+    <ImageView
+        android:id="@+id/thumbnail"
+        android:layout_width="@dimen/image_width"
+        android:layout_height="@dimen/image_height"
+        android:layout_marginEnd="@dimen/image_margin_end"
+        android:contentDescription="@string/article_thumbnail_description" />
+
+    <TextView
+        android:id="@+id/publishedDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/margin_top"
+        android:textSize="@dimen/section_date_size" />
+
+    <TextView
+        android:id="@+id/section"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/thumbnail"
+        android:layout_toStartOf="@id/publishedDate"
+        android:layout_marginTop="@dimen/margin_top"
+        android:textStyle="bold"
+        android:textSize="@dimen/section_date_size" />
+
+    <TextView
+        android:id="@+id/newsTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@id/thumbnail"
+        android:layout_alignParentBottom="true"
+        android:textSize="@dimen/title_size"
+        android:lines="2"
+        android:ellipsize="end" />
+
+</RelativeLayout>
