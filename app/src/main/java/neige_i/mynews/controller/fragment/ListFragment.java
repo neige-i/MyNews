@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -53,6 +54,11 @@ public class ListFragment extends Fragment {
      */
     @BindView(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
 
+    /**
+     * Widget to enable the "pull to refresh" functionality.
+     */
+    @BindView(R.id.swipeRefreshLayout) SwipeRefreshLayout mSwipeRefreshLayout;
+
     // ----------------------------------     DATA VARIABLES     -----------------------------------
 
     /**
@@ -100,6 +106,7 @@ public class ListFragment extends Fragment {
         ButterKnife.bind(this, mainView);
 
         configRecyclerView();
+        configSwipeRefreshLayout();
         executeHttpRequest();
 
         return mainView;
@@ -120,6 +127,19 @@ public class ListFragment extends Fragment {
         mRecyclerView.setAdapter(new NewsAdapter(mArticleList));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerDecoration(mRecyclerView.getContext()));
+    }
+
+    /**
+     * Configures the SwipeRefreshLayout.
+     */
+    private void configSwipeRefreshLayout() {
+        mSwipeRefreshLayout.setRefreshing(true);
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                executeHttpRequest();
+            }
+        });
     }
 
     // ----------------------------------     NETWORK METHODS     ----------------------------------
@@ -155,6 +175,8 @@ public class ListFragment extends Fragment {
 
             @Override
             public void onError(Throwable e) {
+                mSwipeRefreshLayout.setRefreshing(false);
+
                 // Display an error message in the Snackbar
                 String errorMessage;
                 if (e instanceof UnknownHostException)
@@ -167,7 +189,9 @@ public class ListFragment extends Fragment {
             }
 
             @Override
-            public void onComplete() {}
+            public void onComplete() {
+                mSwipeRefreshLayout.setRefreshing(false);
+            }
         });
     }
 
