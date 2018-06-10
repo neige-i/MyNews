@@ -68,6 +68,11 @@ public class ArticleActivity extends AppCompatActivity {
         return true;
     }
 
+    @Override
+    public void onBackPressed() {
+        if (!canWebViewGoesBack()) super.onBackPressed();
+    }
+
     // ------------------------------------     UI METHODS     -------------------------------------
 
     /**
@@ -100,5 +105,17 @@ public class ArticleActivity extends AppCompatActivity {
 
         // Load the URL
         mWebView.loadUrl(getIntent().getStringExtra(URL));
+    }
+
+    /**
+     * Goes back in the WebView history.
+     * @return true if the WebView actually goes back in its history, false otherwise.
+     */
+    private boolean canWebViewGoesBack() {
+        if (mWebView.canGoBack()) {
+            mWebView.goBack();
+            return true;
+        } else
+            return false;
     }
 }
