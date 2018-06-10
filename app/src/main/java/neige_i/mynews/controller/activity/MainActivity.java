@@ -1,5 +1,6 @@
 package neige_i.mynews.controller.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.search:           Log.i("MainActivity's menu", "click on 'Search'");          return true;
+            case R.id.search:           startActivity();                                            return true;
             case R.id.notifications:    Log.i("MainActivity's menu", "click on 'Notifications'");   return true;
             case R.id.about:            Log.i("MainActivity's menu", "click on 'About'");           return true;
             default:                    return super.onOptionsItemSelected(item);
@@ -64,8 +65,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Configures the activity Toolbar.
      */
+    @SuppressWarnings("ConstantConditions")
     private void configToolbar() {
-        assert getSupportActionBar() != null;
         setSupportActionBar(mToolbar);
         getSupportActionBar().setElevation(0); // The TabLayout is just below the Toolbar
     }
@@ -75,5 +76,12 @@ public class MainActivity extends AppCompatActivity {
      */
     private void configViewPager() {
         mViewPager.setAdapter(new TopicAdapter(getSupportFragmentManager(), this));
+    }
+
+    /**
+     * Starts an activity to search articles.
+     */
+    private void startActivity() {
+        startActivity(new Intent(this, SearchActivity.class));
     }
 }

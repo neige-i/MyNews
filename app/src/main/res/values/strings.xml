@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">MyNews</string>
 
+    <!-- Toolbar title -->
+    <string name="search_articles">Search Articles</string>
+
     <!-- Toolbar's item title -->
     <string name="search">Search</string>
     <string name="notifications">Notifications</string>
@@ -15,6 +18,19 @@
 
     <!-- RecyclerView item -->
     <string name="article_thumbnail_description">Article thumbnail</string>
+
+    <!-- SearchActivity EditText hint -->
+    <string name="search_query_term">Search query term</string>
+    <string name="begin_date">Begin Date</string>
+    <string name="end_date">End Date</string>
+
+    <!-- SearchActivity CheckBox text -->
+    <string name="arts">Arts</string>
+    <string name="business">Business</string>
+    <string name="entrepreneurs">Entrepreneurs</string>
+    <string name="politics">Politics</string>
+    <string name="sports">Sports</string>
+    <string name="travel">Travel</string>
 
     <!-- Snackbar message -->
     <string name="connection_timed_out">Timed out! Please check your internet connection.</string>
