@@ -15,6 +15,19 @@ import neige_i.mynews.model.Article;
  * @see NewsHolder
  */
 public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
+    // --------------------------------     CALLBACK INTERFACES     --------------------------------
+
+    /**
+     * Callback interface to spread the click event from the ViewHolder to the fragment.
+     */
+    public interface OnArticleClickListener {
+        /**
+         * Called when an article has been clicked in the RecyclerView.
+         * @param clickedArticle The clicked article.
+         */
+        void onArticleClick(Article clickedArticle);
+    }
+
     // ----------------------------------     DATA VARIABLES     -----------------------------------
 
     /**
@@ -22,10 +35,16 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
      */
     private final List<Article> mArticleList;
 
+    /**
+     * Callback handling click events.
+     */
+    private final OnArticleClickListener mCallback;
+
     // -----------------------------------     CONSTRUCTORS     ------------------------------------
 
-    public NewsAdapter(List<Article> articleList) {
+    public NewsAdapter(List<Article> articleList, OnArticleClickListener callback) {
         mArticleList = articleList;
+        mCallback = callback;
     }
 
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
@@ -37,7 +56,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
 
     @Override
     public void onBindViewHolder(NewsHolder holder, int position) {
-        holder.updateUI(mArticleList.get(position));
+        holder.updateUI(mArticleList.get(position), mCallback);
     }
 
     @Override

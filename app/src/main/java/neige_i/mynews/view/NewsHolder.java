@@ -55,8 +55,9 @@ public class NewsHolder extends RecyclerView.ViewHolder {
     /**
      * Updates the layout of the RecyclerView item with the information provided by the specified article.
      * @param article   Article that contains the information to update the layout.
+     * @param callback  Callback to spread the click event to the fragment.
      */
-    public void updateUI(Article article) {
+    public void updateUI(final Article article, final NewsAdapter.OnArticleClickListener callback) {
         // Update the UI
         Glide.with(itemView).load(article.getThumbnailUrl())
                 .apply(new RequestOptions().transform(new RoundedCorners(10)))
@@ -64,5 +65,14 @@ public class NewsHolder extends RecyclerView.ViewHolder {
         mSection.setText(article.getSection());
         mPublishedDate.setText(article.getPublishedDate());
         mTitle.setText(article.getTitle());
+
+        // Spread the click event
+        itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (callback != null)
+                    callback.onArticleClick(article);
+            }
+        });
     }
 }
