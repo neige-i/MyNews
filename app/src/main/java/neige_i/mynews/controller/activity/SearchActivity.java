@@ -2,20 +2,15 @@ package neige_i.mynews.controller.activity;
 
 import android.content.Context;
 import android.graphics.Rect;
-import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import neige_i.mynews.R;
 import neige_i.mynews.controller.fragment.SearchFragment;
 
@@ -26,13 +21,8 @@ import neige_i.mynews.controller.fragment.SearchFragment;
  * {@link neige_i.mynews.controller.fragment.ListFragment ListFragment}.
  */
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
-public class SearchActivity extends AppCompatActivity {
+public class SearchActivity extends ChildActivity {
     // -----------------------------------     UI VARIABLES     ------------------------------------
-
-    /**
-     * Activity's toolbar.
-     */
-    @BindView(R.id.toolbar) Toolbar mToolbar;
 
     /**
      * Parent layout of this fragment. It is used to correctly implement the Snackbar.
@@ -42,12 +32,12 @@ public class SearchActivity extends AppCompatActivity {
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_search);
-        ButterKnife.bind(this);
+    protected int getLayoutId() {
+        return R.layout.activity_search;
+    }
 
-        configToolbar();
+    @Override
+    protected void configUI() {
         addOrReplaceFragment(new SearchFragment(), true);
     }
 
@@ -57,23 +47,7 @@ public class SearchActivity extends AppCompatActivity {
         return super.dispatchTouchEvent(event);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // There is only one item in the ToolBar: the 'up' navigation button
-        // So, the user should be taken to the parent activity when this button is clicked
-        onBackPressed();
-        return true;
-    }
-
     // ------------------------------------     UI METHODS     -------------------------------------
-
-    /**
-     * Configures the activity Toolbar.
-     */
-    private void configToolbar() {
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-    }
 
     /**
      * Adds the specified fragment or makes it replace the old one.

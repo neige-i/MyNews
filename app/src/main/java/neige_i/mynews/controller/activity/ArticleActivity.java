@@ -1,30 +1,20 @@
 package neige_i.mynews.controller.activity;
 
 import android.annotation.SuppressLint;
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.view.MenuItem;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import neige_i.mynews.R;
 
 /**
  * This activity displays the article in a WebView.
  */
 @SuppressWarnings("WeakerAccess")
-public class ArticleActivity extends AppCompatActivity {
+public class ArticleActivity extends ChildActivity {
     // -----------------------------------     UI VARIABLES     ------------------------------------
-
-    /**
-     * Activity's toolbar.
-     */
-    @BindView(R.id.toolbar) Toolbar mToolbar;
 
     /**
      * WebView displaying the article content.
@@ -51,21 +41,20 @@ public class ArticleActivity extends AppCompatActivity {
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_article);
-        ButterKnife.bind(this);
-
-        configToolbar();
-        configWebView();
+    protected int getLayoutId() {
+        return R.layout.activity_article;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // There is only one item in the ToolBar: the 'up' navigation button
-        // So, the user should be taken to the parent activity when this button is clicked
-        onBackPressed();
-        return true;
+    @SuppressWarnings("ConstantConditions")
+    protected void configToolbar() {
+        super.configToolbar();
+        getSupportActionBar().setTitle(getIntent().getStringExtra(TITLE));
+    }
+
+    @Override
+    protected void configUI() {
+        configWebView();
     }
 
     @Override
@@ -74,16 +63,6 @@ public class ArticleActivity extends AppCompatActivity {
     }
 
     // ------------------------------------     UI METHODS     -------------------------------------
-
-    /**
-     * Configures the activity Toolbar.
-     */
-    @SuppressWarnings("ConstantConditions")
-    private void configToolbar() {
-        setSupportActionBar(mToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setTitle(getIntent().getStringExtra(TITLE));
-    }
 
     /**
      * Configures the WebView.
