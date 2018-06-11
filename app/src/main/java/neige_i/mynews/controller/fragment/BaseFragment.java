@@ -76,4 +76,19 @@ public abstract class BaseFragment extends Fragment {
      * @return The id of the String resource that will be used as the title of the fragment.
      */
     protected abstract int getFragmentTitle();
+
+    /**
+     * Returns a String representation of the checked categories.
+     * This String is used as a query parameter in Article Search API request.
+     * @return A String representing the selected categories, or null if no one is checked.
+     */
+    protected String getSelectedCategories() {
+        StringBuilder categories = new StringBuilder("news_desk:(");
+        for(CheckBox checkBox : mCategories)
+            if (checkBox.isChecked())
+                categories.append("\"").append(checkBox.getText()).append("\" ");
+        categories.append(')'); // If no CheckBox are checked, this String contains 12 characters
+
+        return categories.length() > 12 ? categories.toString() : null;
+    }
 }

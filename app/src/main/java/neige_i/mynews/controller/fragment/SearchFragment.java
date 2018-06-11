@@ -7,7 +7,6 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -119,23 +118,16 @@ public class SearchFragment extends BaseFragment implements DatePickerDialog.OnD
      */
     @OnClick(R.id.button)
     void submitSearch() {
-        // Get the query terms
+        // Get the query terms and the selected categories
         String query = mQueryInput.getText().toString();
+        String categories = getSelectedCategories();
 
-        // Get the selected categories
-        StringBuilder categories = new StringBuilder("news_desk:(");
-        for(CheckBox checkBox : mCategories)
-            if (checkBox.isChecked())
-                categories.append("\"").append(checkBox.getText()).append("\" ");
-        categories.append(')'); // If no CheckBox is checked, this String contains 12 characters
-
-        View popupView = getPopupView(query, categories.toString());
+        // Show a popup message if there is an error in the search form, otherwise execute the search request
+        View popupView = getPopupView(query, categories);
         if (popupView != null)
-            // Show a popup message if there is an error in the search form
             new AlertDialog.Builder(getActivity()).setView(popupView).show();
         else {
-            // Otherwise, execute the search request
-            String[] searchParameters = new String[] {query, changeDateFormat(mBeginDateInput), changeDateFormat(mEndDateInput), categories.toString()};
+            String[] searchParameters = new String[] {query, changeDateFormat(mBeginDateInput), changeDateFormat(mEndDateInput), categories};
             ((SearchActivity) getActivity()).addOrReplaceFragment(ListFragment.newInstance(ARTICLE_SEARCH, searchParameters), false);
         }
     }
@@ -169,7 +161,7 @@ public class SearchFragment extends BaseFragment implements DatePickerDialog.OnD
         String errorMessage = "";
         if (queryTerms.isEmpty()) // If no query term is input
             errorMessage += "- " + getString(R.string.query_field_mandatory);
-        if (selectedCategories.length() == 12) { // If no category is selected
+        if (selectedCategories == null) { // If no category is selected
             if (!errorMessage.isEmpty())
                 errorMessage += "\n\n"; // Add a new line in the error message if there is more than 1 error
             errorMessage += "- " + getString(R.string.category_field_mandatory);

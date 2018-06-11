@@ -45,4 +45,9 @@
     <string name="no_internet">No internet connection</string>
     <string name="unknown_error">Connection failed! An error has occurred.</string>
     <string name="no_article_found">No articles were found</string>
+
+    <!-- Notification -->
+    <string name="channel_id">My News channel ID</string>
+    <string name="channel_name">New Published articles</string>
+    <string name="notification_title">New articles were published!</string>
 </resources>
