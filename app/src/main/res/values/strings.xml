@@ -11,10 +11,13 @@
     <string name="about">About</string>
 
     <!-- Tab title -->
+    <string name="topStories">Top Stories</string>
+    <string name="mostPopular">Most Popular</string>
+    <string name="business">Business</string>
     <array name="tab_title">
-        <item>Top stories</item>
-        <item>Most popular</item>
-        <item>Business</item>
+        <item>@string/topStories</item>
+        <item>@string/mostPopular</item>
+        <item>@string/business</item>
     </array>
 
     <!-- RecyclerView item -->
@@ -27,7 +30,6 @@
 
     <!-- SearchFragment CheckBox text -->
     <string name="arts">Arts</string>
-    <string name="business">Business</string>
     <string name="entrepreneurs">Entrepreneurs</string>
     <string name="politics">Politics</string>
     <string name="sports">Sports</string>
@@ -50,4 +52,9 @@
     <string name="channel_id">My News channel ID</string>
     <string name="channel_name">New Published articles</string>
     <string name="notification_title">New articles were published!</string>
+
+    <!-- Navigation Drawer -->
+    <string name="header_image">header image</string>
+    <string name="open_navigation_drawer">Open navigation drawer</string>
+    <string name="close_navigation_drawer">Close navigation drawer</string>
 </resources>

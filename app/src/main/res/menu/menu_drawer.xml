@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This layout is the MainActivity's Drawer options menu. It contains 5 items. -->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:id="@+id/topicGroup" android:checkableBehavior="single">
+        <item
+            android:id="@+id/topStories"
+            android:icon="@drawable/ic_star"
+            android:title="@string/topStories" />
+        <item
+            android:id="@+id/mostPopular"
+            android:icon="@drawable/ic_favorite"
+            android:title="@string/mostPopular" />
+        <item
+            android:id="@+id/business"
+            android:icon="@drawable/ic_dollar"
+            android:title="@string/business" />
+    </group>
+
+    <group android:id="@+id/searchGroup" android:checkableBehavior="single">
+        <item
+            android:id="@+id/searchArticle"
+            android:icon="@drawable/ic_search"
+            android:title="@string/search_articles" />
+    </group>
+
+    <group android:id="@+id/notificationGroup" android:checkableBehavior="single">
+        <item
+            android:id="@+id/notification"
+            android:icon="@drawable/ic_notifications"
+            android:title="@string/notifications" />
+    </group>
+</menu>
