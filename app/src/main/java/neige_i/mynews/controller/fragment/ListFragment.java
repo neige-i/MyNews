@@ -23,6 +23,7 @@ import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import neige_i.mynews.R;
 import neige_i.mynews.controller.activity.ArticleActivity;
+import neige_i.mynews.controller.activity.SearchActivity;
 import neige_i.mynews.model.Article;
 import neige_i.mynews.model.Topic;
 import neige_i.mynews.util.NYTStream;
@@ -35,6 +36,7 @@ import static neige_i.mynews.controller.activity.ArticleActivity.TITLE;
 import static neige_i.mynews.controller.activity.ArticleActivity.URL;
 import static neige_i.mynews.util.NYTEndpoint.SECTION_BUSINESS;
 import static neige_i.mynews.util.NYTEndpoint.SECTION_HOME;
+import static neige_i.mynews.view.TopicAdapter.ARTICLE_SEARCH;
 import static neige_i.mynews.view.TopicAdapter.BUSINESS;
 import static neige_i.mynews.view.TopicAdapter.MOST_POPULAR;
 import static neige_i.mynews.view.TopicAdapter.TOP_STORIES;
@@ -84,19 +86,26 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
      */
     private static final String FRAGMENT_INDEX = "FRAGMENT_INDEX";
 
+    /**
+     * Key of the search parameters for the Search Article API request.
+     */
+    public static final String QUERY_PARAMETERS = "QUERY_PARAMETERS";
+
     // ----------------------------------     STATIC METHODS     -----------------------------------
 
     /**
      * This fragment displays different kind of news according to the specified position.
-     * @param position  The position representing which kind of news to display.
+     * @param position          The position representing which kind of news to display.
+     * @param searchParameters  The search parameters, only for the Article Search API request.
      * @return  An instance of ListFragment class.
      */
-    public static ListFragment newInstance(int position) {
+    public static ListFragment newInstance(int position, String[] searchParameters) {
         ListFragment listFragment = new ListFragment();
 
         // Set the bundle
         Bundle args = new Bundle();
         args.putInt(FRAGMENT_INDEX, position);
+        args.putStringArray(QUERY_PARAMETERS, searchParameters);
         listFragment.setArguments(args);
 
         return listFragment;
@@ -175,10 +184,12 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
      */
     private Observable<? extends Response<? extends Topic>> getObservable(int fragmentPosition) {
         switch (fragmentPosition) {
-            case TOP_STORIES:   return NYTStream.streamTopStories(SECTION_HOME);
-            case MOST_POPULAR:  return NYTStream.streamMostPopular();
-            case BUSINESS:      return NYTStream.streamTopStories(SECTION_BUSINESS);
-            default:            throw new IllegalArgumentException("Cannot configure the Observable" +
+            case TOP_STORIES:       return NYTStream.streamTopStories(SECTION_HOME);
+            case MOST_POPULAR:      return NYTStream.streamMostPopular();
+            case BUSINESS:          return NYTStream.streamTopStories(SECTION_BUSINESS);
+            case ARTICLE_SEARCH:    String[] searchParameters = getArguments().getStringArray(QUERY_PARAMETERS);
+                                    return  NYTStream.streamArticleSearch(searchParameters[0], searchParameters[1], searchParameters[2], searchParameters[3]);
+            default:                throw new IllegalArgumentException("Cannot configure the Observable" +
                     " in ListFragment. This fragment has been instantiated with a wrong 'FRAGMENT_INDEX' argument." +
                     " The found argument is: " + fragmentPosition + '.');
         }
@@ -215,6 +226,8 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
             @Override
             public void onComplete() {
                 mSwipeRefreshLayout.setRefreshing(false);
+                if (mArticleList.isEmpty() && getArguments().getInt(FRAGMENT_INDEX) == ARTICLE_SEARCH)
+                    ((SearchActivity) getActivity()).goBackIfNoArticle();
             }
         });
     }

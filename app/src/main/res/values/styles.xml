@@ -8,4 +8,16 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Widget theme -->
+    <style name="widgetTheme">
+        <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <!-- fragment_search's main component theme -->
+    <style name="mainComponentTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginBottom">10dp</item>
+    </style>
+
 </resources>

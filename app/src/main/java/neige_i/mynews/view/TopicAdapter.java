@@ -40,6 +40,11 @@ public class TopicAdapter extends FragmentPagerAdapter {
      */
     public static final int BUSINESS = 2;
 
+    /**
+     * Index of the page displaying the searched articles.
+     */
+    public static final int ARTICLE_SEARCH = -1;
+
     // -----------------------------------     CONSTRUCTORS     ------------------------------------
 
     public TopicAdapter(FragmentManager fm, Context context) {
@@ -51,7 +56,7 @@ public class TopicAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return ListFragment.newInstance(position);
+        return ListFragment.newInstance(position, null);
     }
 
     @Override

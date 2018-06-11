@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">MyNews</string>
 
+    <!-- Toolbar title -->
+    <string name="search_articles">Search Articles</string>
+    <string name="search_results">Search Results</string>
+
     <!-- Toolbar's item title -->
     <string name="search">Search</string>
     <string name="notifications">Notifications</string>
@@ -16,8 +20,26 @@
     <!-- RecyclerView item -->
     <string name="article_thumbnail_description">Article thumbnail</string>
 
+    <!-- SearchFragment EditText hint -->
+    <string name="search_query_term">Search query term</string>
+    <string name="begin_date">Begin Date</string>
+    <string name="end_date">End Date</string>
+
+    <!-- SearchFragment CheckBox text -->
+    <string name="arts">Arts</string>
+    <string name="business">Business</string>
+    <string name="entrepreneurs">Entrepreneurs</string>
+    <string name="politics">Politics</string>
+    <string name="sports">Sports</string>
+    <string name="travel">Travel</string>
+
+    <!-- SearchFragment AlertDialog content -->
+    <string name="query_field_mandatory">Query terms are mandatory</string>
+    <string name="category_field_mandatory">At least one category must be selected</string>
+
     <!-- Snackbar message -->
     <string name="connection_timed_out">Timed out! Please check your internet connection.</string>
     <string name="no_internet">No internet connection</string>
     <string name="unknown_error">Connection failed! An error has occurred.</string>
+    <string name="no_article_found">No articles were found</string>
 </resources>
