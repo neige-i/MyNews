@@ -1,5 +1,6 @@
 package neige_i.mynews.controller.activity;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.design.widget.CoordinatorLayout;
@@ -12,14 +13,21 @@ import android.view.inputmethod.InputMethodManager;
 
 import butterknife.BindView;
 import neige_i.mynews.R;
+import neige_i.mynews.controller.fragment.NotificationFragment;
 import neige_i.mynews.controller.fragment.SearchFragment;
 
 /**
- * This activity displays a form to search articles from the New York Times database.
- * This can be done inside {@link SearchFragment}.
+ * This activity displays two kinds of content which are very alike: the search and the notification.<br />
+ * <b>Search:</b> The user can fill a form to search articles from the New York Times database.
+ * This can be done through {@link SearchFragment}.
  * When the search is submitted, the result is shown in
+ * {@link neige_i.mynews.controller.fragment.ListFragment ListFragment}.<br />
+ * <b>Notification:</b> The user can set criteria to schedule an alarm that will notify him when new
+ * articles are published. This can be done through {@link NotificationFragment}.
+ * If so, the articles, matching the previously set criteria, are displayed in
  * {@link neige_i.mynews.controller.fragment.ListFragment ListFragment}.
  */
+@SuppressLint("Registered")
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
 public class SearchActivity extends ChildActivity {
     // -----------------------------------     UI VARIABLES     ------------------------------------
@@ -28,6 +36,24 @@ public class SearchActivity extends ChildActivity {
      * Parent layout of this fragment. It is used to correctly implement the Snackbar.
      */
     @BindView(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
+    // ---------------------------------     STATIC VARIABLES     ----------------------------------
+
+    /**
+     * Key to retrieve the kind of content this activity will display.
+     * This key can be mapped with only two possible values: {@link #SEARCH_CONTENT} or
+     * {@link #NOTIFICATION_CONTENT}.
+     */
+    public static final String ACTIVITY_CONTENT = "ACTIVITY_CONTENT";
+
+    /**
+     * Constant that represents the search content.
+     */
+    public static final int SEARCH_CONTENT = 0;
+
+    /**
+     * Constant that represents the notification content.
+     */
+    public static final int NOTIFICATION_CONTENT = 1;
 
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 
@@ -38,7 +64,16 @@ public class SearchActivity extends ChildActivity {
 
     @Override
     protected void configUI() {
-        addOrReplaceFragment(new SearchFragment(), true);
+        // Display the appropriate fragment according to the value passed in the intent extra
+        Fragment fragmentToDisplay;
+        switch (getIntent().getIntExtra(ACTIVITY_CONTENT, -1)) {
+            case SEARCH_CONTENT:        fragmentToDisplay = new SearchFragment();       break;
+            case NOTIFICATION_CONTENT:  fragmentToDisplay = new NotificationFragment(); break;
+            default:                    throw new IllegalArgumentException("Cannot configure the " +
+                    "SearchActivity UI. When starting this activity, an intent extra must be mapped with " +
+                    "the 'ACTIVITY_CONTENT' key. This extra can only equal 'SEARCH_CONTENT' or 'NOTIFICATION_CONTENT'.");
+        }
+        addOrReplaceFragment(fragmentToDisplay, true);
     }
 
     @Override

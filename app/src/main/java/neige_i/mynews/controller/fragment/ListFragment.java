@@ -89,7 +89,30 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
     /**
      * Key of the search parameters for the Search Article API request.
      */
-    public static final String QUERY_PARAMETERS = "QUERY_PARAMETERS";
+    public static final String SEARCH_PARAMETERS = "SEARCH_PARAMETERS";
+
+    /**
+     * Name of the SharedPreferences file that stores the read articles.<br />
+     * As this file is used in multiple activities (MainActivity and SearchActivity), the
+     * getSharedPreferences(String, int) method is used instead of the getPreferences(int) method.
+     */
+    public static final String ARTICLE_FILE = "articleFile";
+
+    /**
+     * Key of the already read articles.
+     */
+    public static final String READ_ARTICLE = "READ_ARTICLE";
+
+    /**
+     * String divider that is used to put multiple String into preferences.<br />
+     * Preferences cannot store String lists. To do so, all the String elements of the list are put
+     * one after the other and separated with this divider. After that, the whole content can be
+     * put into preferences.<br />
+     * <b>CAUTION</b>: as the String divider will be used to retrieve the String value from the
+     * preferences (with {@link String#split(String)}), it must be complex enough to be sure that
+     * it won't be contained in a String element.
+     */
+    public static final String DIVIDER = "---";
 
     // ----------------------------------     STATIC METHODS     -----------------------------------
 
@@ -105,7 +128,7 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
         // Set the bundle
         Bundle args = new Bundle();
         args.putInt(FRAGMENT_INDEX, position);
-        args.putStringArray(QUERY_PARAMETERS, searchParameters);
+        args.putStringArray(SEARCH_PARAMETERS, searchParameters);
         listFragment.setArguments(args);
 
         return listFragment;
@@ -187,7 +210,7 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
             case TOP_STORIES:       return NYTStream.streamTopStories(SECTION_HOME);
             case MOST_POPULAR:      return NYTStream.streamMostPopular();
             case BUSINESS:          return NYTStream.streamTopStories(SECTION_BUSINESS);
-            case ARTICLE_SEARCH:    String[] searchParameters = getArguments().getStringArray(QUERY_PARAMETERS);
+            case ARTICLE_SEARCH:    String[] searchParameters = getArguments().getStringArray(SEARCH_PARAMETERS);
                                     return  NYTStream.streamArticleSearch(searchParameters[0], searchParameters[1], searchParameters[2], searchParameters[3]);
             default:                throw new IllegalArgumentException("Cannot configure the Observable" +
                     " in ListFragment. This fragment has been instantiated with a wrong 'FRAGMENT_INDEX' argument." +

@@ -4,12 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -21,8 +18,6 @@ import java.util.Date;
 import java.util.Locale;
 
 import butterknife.BindView;
-import butterknife.BindViews;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import neige_i.mynews.R;
 import neige_i.mynews.controller.activity.SearchActivity;
@@ -36,13 +31,8 @@ import static neige_i.mynews.view.TopicAdapter.ARTICLE_SEARCH;
  * This fragment displays a form to search articles.
  */
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
-public class SearchFragment extends Fragment implements DatePickerDialog.OnDateSetListener {
+public class SearchFragment extends BaseFragment implements DatePickerDialog.OnDateSetListener {
     // -----------------------------------     UI VARIABLES     ------------------------------------
-
-    /**
-     * EditText displaying the search query terms.
-     */
-    @BindView(R.id.queryInput) EditText mQueryInput;
 
     /**
      * Is true if the EditText that has been clicked is {@link #mBeginDateInput}.<br />
@@ -62,12 +52,6 @@ public class SearchFragment extends Fragment implements DatePickerDialog.OnDateS
      */
     @BindView(R.id.endDateInput) EditText mEndDateInput;
 
-    /**
-     * CheckBoxes representing the different categories to search.
-     */
-    @BindViews({ R.id.arts, R.id.business, R.id.entrepreneurs, R.id.politics, R.id.sports, R.id.travel })
-    CheckBox[] mCategories;
-
     // ----------------------------------     DATA VARIABLES     -----------------------------------
 
     /**
@@ -78,18 +62,12 @@ public class SearchFragment extends Fragment implements DatePickerDialog.OnDateS
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View mainView = inflater.inflate(R.layout.fragment_search, container, false);
-        ButterKnife.bind(this, mainView);
-
-        return mainView;
+    protected int getFragmentTitle() {
+        return R.string.search_articles;
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        getActivity().setTitle(R.string.search_articles);
-    }
+    protected void configUI() {}
 
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
@@ -140,23 +118,16 @@ public class SearchFragment extends Fragment implements DatePickerDialog.OnDateS
      */
     @OnClick(R.id.button)
     void submitSearch() {
-        // Get the query terms
+        // Get the query terms and the selected categories
         String query = mQueryInput.getText().toString();
+        String categories = getSelectedCategories();
 
-        // Get the selected categories
-        StringBuilder categories = new StringBuilder("news_desk:(");
-        for(CheckBox checkBox : mCategories)
-            if (checkBox.isChecked())
-                categories.append("\"").append(checkBox.getText()).append("\" ");
-        categories.append(')'); // If no CheckBox is checked, this String contains 12 characters
-
-        View popupView = getPopupView(query, categories.toString());
+        // Show a popup message if there is an error in the search form, otherwise execute the search request
+        View popupView = getPopupView(query, categories);
         if (popupView != null)
-            // Show a popup message if there is an error in the search form
             new AlertDialog.Builder(getActivity()).setView(popupView).show();
         else {
-            // Otherwise, execute the search request
-            String[] searchParameters = new String[] {query, changeDateFormat(mBeginDateInput), changeDateFormat(mEndDateInput), categories.toString()};
+            String[] searchParameters = new String[] {query, changeDateFormat(mBeginDateInput), changeDateFormat(mEndDateInput), categories};
             ((SearchActivity) getActivity()).addOrReplaceFragment(ListFragment.newInstance(ARTICLE_SEARCH, searchParameters), false);
         }
     }
@@ -190,7 +161,7 @@ public class SearchFragment extends Fragment implements DatePickerDialog.OnDateS
         String errorMessage = "";
         if (queryTerms.isEmpty()) // If no query term is input
             errorMessage += "- " + getString(R.string.query_field_mandatory);
-        if (selectedCategories.length() == 12) { // If no category is selected
+        if (selectedCategories == null) { // If no category is selected
             if (!errorMessage.isEmpty())
                 errorMessage += "\n\n"; // Add a new line in the error message if there is more than 1 error
             errorMessage += "- " + getString(R.string.category_field_mandatory);
