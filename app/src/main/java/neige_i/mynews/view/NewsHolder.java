@@ -9,6 +9,8 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners;
 import com.bumptech.glide.request.RequestOptions;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import neige_i.mynews.R;
@@ -54,10 +56,11 @@ public class NewsHolder extends RecyclerView.ViewHolder {
 
     /**
      * Updates the layout of the RecyclerView item with the information provided by the specified article.
-     * @param article   Article that contains the information to update the layout.
-     * @param callback  Callback to spread the click event to the fragment.
+     * @param article       Article that contains the information to update the layout.
+     * @param callback      Callback to spread the click event to the fragment.
+     * @param readArticles  List of articles that have already been read.
      */
-    public void updateUI(final Article article, final NewsAdapter.OnArticleClickListener callback) {
+    public void updateUI(final Article article, final NewsAdapter.OnArticleClickListener callback, List<String> readArticles) {
         // Update the UI
         Glide.with(itemView).load(article.getThumbnailUrl())
                 .apply(new RequestOptions().transform(new RoundedCorners(10)))
@@ -74,5 +77,8 @@ public class NewsHolder extends RecyclerView.ViewHolder {
                     callback.onArticleClick(article);
             }
         });
+
+        // Change the appearance of the item (i.e. the article) if it has already been read
+        itemView.setAlpha(readArticles.contains(article.getTitle()) ? .5f : 1f);
     }
 }

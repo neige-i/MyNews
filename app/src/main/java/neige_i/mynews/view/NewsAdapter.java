@@ -40,11 +40,23 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
      */
     private final OnArticleClickListener mCallback;
 
+    /**
+     * List of the titles of the already read articles.
+     */
+    private List<String> mReadArticles;
+
     // -----------------------------------     CONSTRUCTORS     ------------------------------------
 
     public NewsAdapter(List<Article> articleList, OnArticleClickListener callback) {
         mArticleList = articleList;
         mCallback = callback;
+    }
+
+    // ---------------------------------     GETTERS & SETTERS     ---------------------------------
+
+    public void setReadArticles(List<String> readArticles) {
+        mReadArticles = readArticles;
+        notifyDataSetChanged();
     }
 
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
@@ -56,7 +68,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
 
     @Override
     public void onBindViewHolder(NewsHolder holder, int position) {
-        holder.updateUI(mArticleList.get(position), mCallback);
+        holder.updateUI(mArticleList.get(position), mCallback, mReadArticles);
     }
 
     @Override

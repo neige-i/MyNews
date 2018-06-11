@@ -1,6 +1,8 @@
 package neige_i.mynews.controller.fragment;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
@@ -14,6 +16,7 @@ import android.view.ViewGroup;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -71,6 +74,11 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
      * List of the articles to show, retrieved from the HTTP request response.
      */
     private final List<Article> mArticleList = new ArrayList<>();
+
+    /**
+     * Preferences that store the articles that have already been read.
+     */
+    private SharedPreferences mPreferences;
 
     // ---------------------------------     NETWORK VARIABLES     ---------------------------------
 
@@ -144,12 +152,20 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
         configRecyclerView();
         configSwipeRefreshLayout();
         executeHttpRequest();
+        configPreferences();
 
         return mainView;
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        refreshRecyclerView();
+    }
+
+    @Override
     public void onArticleClick(Article clickedArticle) {
+        saveReadArticles(clickedArticle.getTitle());
         showArticleContent(clickedArticle.getTitle(), clickedArticle.getUrl());
     }
 
@@ -168,6 +184,14 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
         mRecyclerView.setAdapter(new NewsAdapter(mArticleList, this));
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerDecoration(mRecyclerView.getContext()));
+    }
+
+    /**
+     * Updates the RecyclerView adapter.
+     */
+    private void refreshRecyclerView() {
+        List<String> readArticles = loadReadArticles();
+        ((NewsAdapter) mRecyclerView.getAdapter()).setReadArticles(readArticles);
     }
 
     /**
@@ -211,7 +235,7 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
             case MOST_POPULAR:      return NYTStream.streamMostPopular();
             case BUSINESS:          return NYTStream.streamTopStories(SECTION_BUSINESS);
             case ARTICLE_SEARCH:    String[] searchParameters = getArguments().getStringArray(SEARCH_PARAMETERS);
-                                    return  NYTStream.streamArticleSearch(searchParameters[0], searchParameters[1], searchParameters[2], searchParameters[3]);
+                return  NYTStream.streamArticleSearch(searchParameters[0], searchParameters[1], searchParameters[2], searchParameters[3]);
             default:                throw new IllegalArgumentException("Cannot configure the Observable" +
                     " in ListFragment. This fragment has been instantiated with a wrong 'FRAGMENT_INDEX' argument." +
                     " The found argument is: " + fragmentPosition + '.');
@@ -224,35 +248,35 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
     private void executeHttpRequest() {
         mDisposableObserver = getObservable(getArguments().getInt(FRAGMENT_INDEX))
                 .subscribeWith(new DisposableObserver<Response<? extends Topic>>() {
-            @Override
-            public void onNext(Response<? extends Topic> topicResponse) {
-                mArticleList.clear();
-                mArticleList.addAll(topicResponse.body().getArticleList());
-                mRecyclerView.getAdapter().notifyDataSetChanged();
-            }
+                    @Override
+                    public void onNext(Response<? extends Topic> topicResponse) {
+                        mArticleList.clear();
+                        mArticleList.addAll(topicResponse.body().getArticleList());
+                        mRecyclerView.getAdapter().notifyDataSetChanged();
+                    }
 
-            @Override
-            public void onError(Throwable e) {
-                mSwipeRefreshLayout.setRefreshing(false);
+                    @Override
+                    public void onError(Throwable e) {
+                        mSwipeRefreshLayout.setRefreshing(false);
 
-                // Display an error message in the Snackbar
-                String errorMessage;
-                if (e instanceof UnknownHostException)
-                    errorMessage = getString(R.string.no_internet);
-                else if (e instanceof TimeoutException)
-                    errorMessage = getString(R.string.connection_timed_out);
-                else
-                    errorMessage = getString(R.string.unknown_error);
-                Snackbar.make(mCoordinatorLayout, errorMessage, Snackbar.LENGTH_LONG).show();
-            }
+                        // Display an error message in the Snackbar
+                        String errorMessage;
+                        if (e instanceof UnknownHostException)
+                            errorMessage = getString(R.string.no_internet);
+                        else if (e instanceof TimeoutException)
+                            errorMessage = getString(R.string.connection_timed_out);
+                        else
+                            errorMessage = getString(R.string.unknown_error);
+                        Snackbar.make(mCoordinatorLayout, errorMessage, Snackbar.LENGTH_LONG).show();
+                    }
 
-            @Override
-            public void onComplete() {
-                mSwipeRefreshLayout.setRefreshing(false);
-                if (mArticleList.isEmpty() && getArguments().getInt(FRAGMENT_INDEX) == ARTICLE_SEARCH)
-                    ((SearchActivity) getActivity()).goBackIfNoArticle();
-            }
-        });
+                    @Override
+                    public void onComplete() {
+                        mSwipeRefreshLayout.setRefreshing(false);
+                        if (mArticleList.isEmpty() && getArguments().getInt(FRAGMENT_INDEX) == ARTICLE_SEARCH)
+                            ((SearchActivity) getActivity()).goBackIfNoArticle();
+                    }
+                });
     }
 
     /**
@@ -261,5 +285,43 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
     private void disposeWhenDestroy() {
         if (mDisposableObserver != null && !mDisposableObserver.isDisposed())
             mDisposableObserver.dispose();
+    }
+
+    // -----------------------------------     DATA METHODS     ------------------------------------
+
+    private void configPreferences() {
+        mPreferences = getActivity().getSharedPreferences(ARTICLE_FILE, Context.MODE_PRIVATE);
+    }
+
+    /**
+     * Retrieves the read articles from the preferences.
+     * @return  The String list containing the titles of the already read articles.
+     */
+    private List<String> loadReadArticles() {
+        String readArticles = mPreferences.getString(READ_ARTICLE, "");
+        if (readArticles.isEmpty())
+            return new ArrayList<>();
+        else
+            return Arrays.asList(readArticles.split(DIVIDER)); // String -> String[] -> List<String>
+    }
+
+    /**
+     * Adds the specified article title to the already read ones, and stores the whole thing
+     * to the preferences.
+     * @param title The title of the article to add to the already read ones.
+     */
+    private void saveReadArticles(String title) {
+        List<String> readArticleList = loadReadArticles();
+
+        // No need to duplicate the specified title if it is already contained in the list
+        if (!readArticleList.contains(title)) {
+            // Extract the String elements from the list and add the specified title at the end
+            StringBuilder readArticles = new StringBuilder();
+            for (String readArticle : readArticleList)
+                readArticles.append(readArticle).append(DIVIDER);
+            readArticles.append(title);
+
+            mPreferences.edit().putString(READ_ARTICLE, readArticles.toString()).apply();
+        }
     }
 }
