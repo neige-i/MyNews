@@ -3,6 +3,8 @@ package neige_i.mynews.controller.activity;
 import android.content.Context;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
@@ -31,6 +33,11 @@ public class SearchActivity extends AppCompatActivity {
      * Activity's toolbar.
      */
     @BindView(R.id.toolbar) Toolbar mToolbar;
+
+    /**
+     * Parent layout of this fragment. It is used to correctly implement the Snackbar.
+     */
+    @BindView(R.id.coordinatorLayout) CoordinatorLayout mCoordinatorLayout;
 
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 
@@ -118,5 +125,14 @@ public class SearchActivity extends AppCompatActivity {
                 }
             }
         }
+    }
+
+    /**
+     * Returns to the previous screen if no articles were found with the Article Search API request.
+     * Also displays a message in a Snackbar.
+     */
+    public void goBackIfNoArticle() {
+        onBackPressed();
+        Snackbar.make(mCoordinatorLayout, R.string.no_article_found, Snackbar.LENGTH_LONG).show();
     }
 }

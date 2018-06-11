@@ -41,4 +41,5 @@
     <string name="connection_timed_out">Timed out! Please check your internet connection.</string>
     <string name="no_internet">No internet connection</string>
     <string name="unknown_error">Connection failed! An error has occurred.</string>
+    <string name="no_article_found">No articles were found</string>
 </resources>

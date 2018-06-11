@@ -23,6 +23,7 @@ import io.reactivex.Observable;
 import io.reactivex.observers.DisposableObserver;
 import neige_i.mynews.R;
 import neige_i.mynews.controller.activity.ArticleActivity;
+import neige_i.mynews.controller.activity.SearchActivity;
 import neige_i.mynews.model.Article;
 import neige_i.mynews.model.Topic;
 import neige_i.mynews.util.NYTStream;
@@ -225,6 +226,8 @@ public class ListFragment extends Fragment implements NewsAdapter.OnArticleClick
             @Override
             public void onComplete() {
                 mSwipeRefreshLayout.setRefreshing(false);
+                if (mArticleList.isEmpty() && getArguments().getInt(FRAGMENT_INDEX) == ARTICLE_SEARCH)
+                    ((SearchActivity) getActivity()).goBackIfNoArticle();
             }
         });
     }
