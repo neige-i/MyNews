@@ -56,7 +56,7 @@ public class TopicAdapter extends FragmentPagerAdapter {
 
     @Override
     public Fragment getItem(int position) {
-        return ListFragment.newInstance(position);
+        return ListFragment.newInstance(position, null);
     }
 
     @Override
