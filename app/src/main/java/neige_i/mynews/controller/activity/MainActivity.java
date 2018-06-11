@@ -2,7 +2,10 @@ package neige_i.mynews.controller.activity;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
 import android.support.v4.view.ViewPager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -14,9 +17,13 @@ import butterknife.ButterKnife;
 import neige_i.mynews.R;
 import neige_i.mynews.view.TopicAdapter;
 
+import static android.support.v4.view.GravityCompat.START;
 import static neige_i.mynews.controller.activity.SearchActivity.ACTIVITY_CONTENT;
 import static neige_i.mynews.controller.activity.SearchActivity.NOTIFICATION_CONTENT;
 import static neige_i.mynews.controller.activity.SearchActivity.SEARCH_CONTENT;
+import static neige_i.mynews.view.TopicAdapter.BUSINESS;
+import static neige_i.mynews.view.TopicAdapter.MOST_POPULAR;
+import static neige_i.mynews.view.TopicAdapter.TOP_STORIES;
 
 /**
  * This activity displays the news through ViewPager and TabLayout.
@@ -36,6 +43,16 @@ public class MainActivity extends AppCompatActivity {
      */
     @BindView(R.id.viewPager) ViewPager mViewPager;
 
+    /**
+     * Layout to implement the Navigation Drawer.
+     */
+    @BindView(R.id.drawerLayout) DrawerLayout mDrawerLayout;
+
+    /**
+     * View containing the Navigation Drawer items.
+     */
+    @BindView(R.id.navigation_view) NavigationView mNavigationView;
+
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 
     @Override
@@ -46,6 +63,14 @@ public class MainActivity extends AppCompatActivity {
 
         configToolbar();
         configViewPager();
+        configDrawerLayout();
+        configNavigationView();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initNavigationView();
     }
 
     @Override
@@ -64,6 +89,14 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        if (mDrawerLayout.isDrawerOpen(START))
+            mDrawerLayout.closeDrawer(START);
+        else
+            super.onBackPressed();
+    }
+
     // ------------------------------------     UI METHODS     -------------------------------------
 
     /**
@@ -80,6 +113,66 @@ public class MainActivity extends AppCompatActivity {
      */
     private void configViewPager() {
         mViewPager.setAdapter(new TopicAdapter(getSupportFragmentManager(), this));
+        mViewPager.addOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) {
+                // Change the selected item in Navigation Drawer when swiping the ViewPager
+                mNavigationView.getMenu().getItem(position).setChecked(true);
+            }
+        });
+    }
+
+    /**
+     * Configures the DrawerLayout.
+     */
+    private void configDrawerLayout() {
+        // Set the listener
+        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                mToolbar,
+                R.string.open_navigation_drawer,
+                R.string.close_navigation_drawer
+        );
+
+        // Add the listener to the DrawerLayout
+        mDrawerLayout.addDrawerListener(toggle);
+        toggle.syncState();
+    }
+
+    /**
+     * Configures the NavigationView by setting the actions to perform if a drawer item is selected.
+     */
+    private void configNavigationView() {
+        mNavigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.topStories:       displayTopic(TOP_STORIES);              break;
+                    case R.id.mostPopular:      displayTopic(MOST_POPULAR);             break;
+                    case R.id.business:         displayTopic(BUSINESS);                 break;
+                    case R.id.searchArticle:    startActivity(SEARCH_CONTENT);          break;
+                    case R.id.notification:     startActivity(NOTIFICATION_CONTENT);    break;
+                }
+                mDrawerLayout.closeDrawer(START);
+                return true;
+            }
+        });
+    }
+
+    /**
+     * Initializes the NavigationView by selecting the appropriate item at application (re)start.
+     */
+    private void initNavigationView() {
+        mNavigationView.getMenu().getItem(mViewPager.getCurrentItem()).setChecked(true);
+    }
+
+    /**
+     * Displays the topic at the specified position.
+     * @param position The position of the topic to display.
+     */
+    private void displayTopic(int position) {
+        mViewPager.setCurrentItem(position);
     }
 
     /**

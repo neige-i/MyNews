@@ -68,7 +68,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsHolder> {
 
     @Override
     public void onBindViewHolder(NewsHolder holder, int position) {
-        holder.updateUI(mArticleList.get(position), mCallback);
+        holder.updateUI(mArticleList.get(position), mCallback, mReadArticles);
     }
 
     @Override
