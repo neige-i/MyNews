@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-    This layout is the SearchFragment content view.
-    This layout contains the widgets that allow user to perform an article search request.
+    This layout is the SearchFragment and NotificationFragment content view.
+    It is meant to be placed inside activity_search.
+    This layout contains the widgets that allow user to:
+        - perform an article search request,
+        - schedule notifications.
 -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"

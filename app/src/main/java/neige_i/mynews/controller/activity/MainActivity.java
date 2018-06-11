@@ -14,6 +14,10 @@ import butterknife.ButterKnife;
 import neige_i.mynews.R;
 import neige_i.mynews.view.TopicAdapter;
 
+import static neige_i.mynews.controller.activity.SearchActivity.ACTIVITY_CONTENT;
+import static neige_i.mynews.controller.activity.SearchActivity.NOTIFICATION_CONTENT;
+import static neige_i.mynews.controller.activity.SearchActivity.SEARCH_CONTENT;
+
 /**
  * This activity displays the news through ViewPager and TabLayout.
  * Each page of the ViewPager contains a different news topic.
@@ -53,8 +57,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.search:           startActivity();                                            return true;
-            case R.id.notifications:    Log.i("MainActivity's menu", "click on 'Notifications'");   return true;
+            case R.id.search:           startActivity(SEARCH_CONTENT);                              return true;
+            case R.id.notifications:    startActivity(NOTIFICATION_CONTENT);                        return true;
             case R.id.about:            Log.i("MainActivity's menu", "click on 'About'");           return true;
             default:                    return super.onOptionsItemSelected(item);
         }
@@ -79,9 +83,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Starts an activity to search articles.
+     * Starts an activity to search articles or set the notifications.
+     * The whichFragment value determines which fragment to display.
+     * @param whichFragment Key to choose which fragment to display when the activity is started.
+     *                      Must be either {@link SearchActivity#SEARCH_CONTENT SEARCH_CONTENT} or
+     *                      {@link SearchActivity#NOTIFICATION_CONTENT NOTIFICATION_CONTENT}.
      */
-    private void startActivity() {
-        startActivity(new Intent(this, SearchActivity.class));
+    private void startActivity(int whichFragment) {
+        Intent activityIntent = new Intent(this, SearchActivity.class);
+        activityIntent.putExtra(ACTIVITY_CONTENT, whichFragment);
+        startActivity(activityIntent);
     }
 }

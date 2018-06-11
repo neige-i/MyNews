@@ -59,7 +59,7 @@ public abstract class ChildActivity extends AppCompatActivity {
      * @param contentToAdd The id of the layout resource file to inflate.
      * @param root         The root view that will contain the inflated one.
      */
-    private void addContentToLayout(int contentToAdd, View root) {
+    public void addContentToLayout(int contentToAdd, View root) {
         View.inflate(this, contentToAdd, (ViewGroup) root);
     }
 
