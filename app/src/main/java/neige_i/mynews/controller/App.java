@@ -13,6 +13,7 @@ import static neige_i.mynews.util.NotificationJob.NOTIFICATION_TAG;
 /**
  * This application class is used to create the required job for background tasks.
  */
+@SuppressWarnings("WeakerAccess")
 public class App extends Application {
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 

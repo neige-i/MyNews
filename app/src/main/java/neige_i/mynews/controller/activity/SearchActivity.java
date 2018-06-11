@@ -1,6 +1,5 @@
 package neige_i.mynews.controller.activity;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Rect;
 import android.support.design.widget.CoordinatorLayout;
@@ -27,7 +26,6 @@ import neige_i.mynews.controller.fragment.SearchFragment;
  * If so, the articles, matching the previously set criteria, are displayed in
  * {@link neige_i.mynews.controller.fragment.ListFragment ListFragment}.
  */
-@SuppressLint("Registered")
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
 public class SearchActivity extends ChildActivity {
     // -----------------------------------     UI VARIABLES     ------------------------------------

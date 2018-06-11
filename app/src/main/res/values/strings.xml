@@ -57,4 +57,7 @@
     <string name="header_image">header image</string>
     <string name="open_navigation_drawer">Open navigation drawer</string>
     <string name="close_navigation_drawer">Close navigation drawer</string>
+
+    <!-- About dialog image -->
+    <string name="new_york_times_api">Logo of the New York Times API</string>
 </resources>

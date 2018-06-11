@@ -145,6 +145,7 @@ public class NotificationJob extends DailyJob {
         PendingIntent pendingIntent = stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // Set the notification content
+        @SuppressLint("IconColors")
         NotificationCompat.Builder builder = new NotificationCompat.Builder(getContext(), channelId)
                 .setSmallIcon(R.drawable.ic_star_white)
                 .setContentTitle(getContext().getString(R.string.notification_title))

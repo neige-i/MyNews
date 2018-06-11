@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This layout is the about dialog's view in MainActivity -->
+<ImageView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="300dp"
+    android:layout_height="60dp"
+    android:src="@drawable/ic_nyt_api"
+    android:contentDescription="@string/new_york_times_api" />

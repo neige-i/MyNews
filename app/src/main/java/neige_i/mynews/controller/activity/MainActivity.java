@@ -1,5 +1,6 @@
 package neige_i.mynews.controller.activity;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -8,7 +9,6 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -82,9 +82,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.search:           startActivity(SEARCH_CONTENT);                              return true;
-            case R.id.notifications:    startActivity(NOTIFICATION_CONTENT);                        return true;
-            case R.id.about:            Log.i("MainActivity's menu", "click on 'About'");           return true;
+            case R.id.search:           startActivity(SEARCH_CONTENT);          return true;
+            case R.id.notifications:    startActivity(NOTIFICATION_CONTENT);    return true;
+            case R.id.about:            showAboutDialog();                      return true;
             default:                    return super.onOptionsItemSelected(item);
         }
     }
@@ -186,5 +186,14 @@ public class MainActivity extends AppCompatActivity {
         Intent activityIntent = new Intent(this, SearchActivity.class);
         activityIntent.putExtra(ACTIVITY_CONTENT, whichFragment);
         startActivity(activityIntent);
+    }
+
+    /**
+     * Shows the 'About' dialog.
+     */
+    private void showAboutDialog() {
+        Dialog aboutDialog = new Dialog(this); // The image is not correctly displayed with AlertDialog
+        aboutDialog.setContentView(R.layout.dialog_about);
+        aboutDialog.show();
     }
 }
