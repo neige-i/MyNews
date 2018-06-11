@@ -12,8 +12,12 @@ import android.view.inputmethod.InputMethodManager;
 
 import butterknife.BindView;
 import neige_i.mynews.R;
+import neige_i.mynews.controller.fragment.ListFragment;
 import neige_i.mynews.controller.fragment.NotificationFragment;
 import neige_i.mynews.controller.fragment.SearchFragment;
+
+import static neige_i.mynews.controller.fragment.ListFragment.SEARCH_PARAMETERS;
+import static neige_i.mynews.view.TopicAdapter.ARTICLE_SEARCH;
 
 /**
  * This activity displays two kinds of content which are very alike: the search and the notification.<br />
@@ -72,6 +76,11 @@ public class SearchActivity extends ChildActivity {
                     "the 'ACTIVITY_CONTENT' key. This extra can only equal 'SEARCH_CONTENT' or 'NOTIFICATION_CONTENT'.");
         }
         addOrReplaceFragment(fragmentToDisplay, true);
+
+        // If this activity is started to show articles that were found by the notification
+        String[] searchParameters = getIntent().getStringArrayExtra(SEARCH_PARAMETERS);
+        if (searchParameters != null)
+            addOrReplaceFragment(ListFragment.newInstance(ARTICLE_SEARCH, searchParameters), false);
     }
 
     @Override
