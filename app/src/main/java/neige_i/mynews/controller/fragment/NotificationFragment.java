@@ -5,8 +5,12 @@ import android.graphics.Color;
 import android.support.v7.widget.SwitchCompat;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+
+import java.util.Arrays;
+import java.util.List;
 
 import butterknife.BindView;
 import neige_i.mynews.R;
@@ -59,6 +63,21 @@ public class NotificationFragment extends BaseFragment {
      */
     private final String JOB_ID = "JOB_ID";
 
+    /**
+     * Key to store the query terms into preferences.
+     */
+    private final String QUERY_TERM = "QUERY_TERM";
+
+    /**
+     * Key to store the checked categories into preferences.
+     */
+    private final String CATEGORIES = "CATEGORIES";
+
+    /**
+     * Key to store the notification enable state into preferences.
+     */
+    private final String NOTIFICATION_ENABLE = "NOTIFICATION_ENABLE";
+
     // --------------------------------     OVERRIDDEN METHODS     ---------------------------------
 
     @Override
@@ -71,12 +90,14 @@ public class NotificationFragment extends BaseFragment {
         mPreferences = getActivity().getPreferences(MODE_PRIVATE);
 
         initUI();
+        initEnableState();
         configSwitchListener();
     }
 
     @Override
     public void onStop() {
         super.onStop();
+        saveState();
         if (mSwitchCompat.isChecked())
             startNotification();
     }
@@ -90,6 +111,23 @@ public class NotificationFragment extends BaseFragment {
         // These views are not used in this fragment
         mDateLayout.setVisibility(GONE);
         mButton.setVisibility(GONE);
+
+        // Initialize the EditText
+        mQueryInput.setText(mPreferences.getString(QUERY_TERM, ""));
+
+        // Initialize the CheckBoxes
+        List<String> categoryList = Arrays.asList(mPreferences.getString(CATEGORIES, "").split(DIVIDER));
+        for (CheckBox checkBox : mCategories)
+            checkBox.setChecked(categoryList.contains(checkBox.getText().toString()));
+    }
+
+    /**
+     * Initializes the widgets' enable state from preferences.
+     */
+    private void initEnableState() {
+        boolean isNotificationEnabled = mPreferences.getBoolean(NOTIFICATION_ENABLE, false);
+        mSwitchCompat.setChecked(isNotificationEnabled);
+        configWidgetEnableState(isNotificationEnabled);
     }
 
     /**
@@ -99,11 +137,22 @@ public class NotificationFragment extends BaseFragment {
         mSwitchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mNotificationText.setTextColor(isChecked ? Color.BLACK : 0xff808080);
+                configWidgetEnableState(isChecked);
                 if (!isChecked)
                     cancelNotification(mPreferences.getInt(JOB_ID, -1));
             }
         });
+    }
+
+    /**
+     * Configures the widgets' enable state.
+     * @param isNotificationEnabled True if notification is enabled, false otherwise.
+     */
+    private void configWidgetEnableState(boolean isNotificationEnabled) {
+        mNotificationText.setTextColor(isNotificationEnabled ? Color.BLACK : 0xff808080);
+        mQueryInput.setEnabled(isNotificationEnabled);
+        for (CheckBox checkBox : mCategories)
+            checkBox.setEnabled(isNotificationEnabled);
     }
 
     // --------------------------------     BACKGROUND METHODS     ---------------------------------
@@ -122,5 +171,25 @@ public class NotificationFragment extends BaseFragment {
 
         // Save the job id in the preferences
         mPreferences.edit().putInt(JOB_ID, jobId).apply();
+    }
+
+    // -----------------------------------     DATA METHODS     ------------------------------------
+
+    /**
+     * Saves the form state.<br />
+     * If the user leaves this fragment with filled fields and comes back to it later,
+     * he will not fill the form again.
+     */
+    private void saveState() {
+        StringBuilder selectedCategories = new StringBuilder();
+        for (CheckBox checkBox : mCategories)
+            if (checkBox.isChecked())
+                selectedCategories.append(checkBox.getText()).append(DIVIDER);
+
+        mPreferences.edit()
+                .putString(QUERY_TERM, mQueryInput.getText().toString())
+                .putString(CATEGORIES, selectedCategories.toString())
+                .putBoolean(NOTIFICATION_ENABLE, mQueryInput.isEnabled())
+                .apply();
     }
 }
