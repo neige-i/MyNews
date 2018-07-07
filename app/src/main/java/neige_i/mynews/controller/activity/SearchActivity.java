@@ -23,12 +23,10 @@ import static neige_i.mynews.view.TopicAdapter.ARTICLE_SEARCH;
  * This activity displays two kinds of content which are very alike: the search and the notification.<br />
  * <b>Search:</b> The user can fill a form to search articles from the New York Times database.
  * This can be done through {@link SearchFragment}.
- * When the search is submitted, the result is shown in
- * {@link neige_i.mynews.controller.fragment.ListFragment ListFragment}.<br />
+ * When the search is submitted, the result is shown in {@link ListFragment}.<br />
  * <b>Notification:</b> The user can set criteria to schedule an alarm that will notify him when new
  * articles are published. This can be done through {@link NotificationFragment}.
- * If so, the articles, matching the previously set criteria, are displayed in
- * {@link neige_i.mynews.controller.fragment.ListFragment ListFragment}.
+ * If so, the articles, matching the previously set criteria, are displayed in {@link ListFragment}.
  */
 @SuppressWarnings({"ConstantConditions", "WeakerAccess"})
 public class SearchActivity extends ChildActivity {
@@ -103,7 +101,7 @@ public class SearchActivity extends ChildActivity {
 
         // Add or replace fragment
         if (addOrReplace)
-            // If the fragment is a new one, then it is SearchFragment
+            // If the fragment is a new one, then it is SearchFragment or NotificationFragment
             fragmentTransaction.add(containerId, fragmentToDisplay);
         else {
             // If the fragment replaces an old one, then it is ListFragment
